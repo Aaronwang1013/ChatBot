@@ -66,3 +66,15 @@ store all log in specific user, if not login, log will not be stored
 
 ## how to deal with outlook 生資詢問？
 要train資料集，或是直接把資料的問答當作chatlog?
+
+
+
+## create requirement for aws lambda
+pip freeze > requirement.txt
+# remove the embedded requirement, keep the required, and change fastapi to v.0.99.1
+
+pip3 install -t dependencies -r requirement.txt
+# this will create a directory with all the dependencies that we just did
+
+(cd dependencies; zip ../aws_lambda_artifact.zip -r .)
+zip aws_lambda_artifact.zip -u main.py

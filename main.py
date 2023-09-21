@@ -3,10 +3,12 @@ from fastapi import FastAPI, Form, Request
 from typing import Annotated
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
-
+from mangum import Mangum
 # make a fastapi application
 
 app = FastAPI()
+handler = Mangum(app)
+
 templates = Jinja2Templates(directory='templates')
 chat_response = []
 @app.get("/" , response_class=HTMLResponse)
@@ -36,16 +38,21 @@ async def chat(request:Request , userInput: Annotated[str , Form()]):
         chat_response.append(bot_response)
         return templates.TemplateResponse("home.html" , {'request':request , "chat_responses":chat_response})
     
-    
+
+@app.get('/image' , response_class= HTMLResponse)
+async def image_page(request: Request):
+    return templates.TemplateResponse("image.html" , {'request':request})
     
 @app.post("/image", response_class=HTMLResponse)
-async def create_image(request: Request, user_input: Annotated[str, Form()]):
+async def create_image(request: Request, userInput: Annotated[str, Form()]):
 
     response = openai.Image.create(
-        prompt=user_input,
+        prompt=userInput,
         n=1,
         size="512x512"
     )
 
     image_url = response['data'][0]['url']
     return templates.TemplateResponse("image.html", {"request": request, "image_url": image_url})
+
+
